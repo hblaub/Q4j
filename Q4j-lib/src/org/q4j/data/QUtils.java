@@ -501,6 +501,25 @@ class QUtils {
 		return list;
 	}
 
+	static <S> Iterable<S> createUnionIterator(Iterable<S> first,
+			Iterable<S> second, Comparator<S> comparer) {
+		List<S> results = createList();
+		Set<S> items = new HashSet<S>();
+		for (S element : first) {
+			if (!items.contains(element)) {
+				items.add(element);
+				results.add(element);
+			}
+		}
+		for (S element : second) {
+			if (!items.contains(element)) {
+				items.add(element);
+				results.add(element);
+			}
+		}
+		return results;
+	}
+
 	static <S> Iterable<S> createWhereIterator(Iterable<S> source,
 			Func.v1<S, Boolean> predicate) {
 		List<S> list = createList();
@@ -520,5 +539,25 @@ class QUtils {
 			counter++;
 		}
 		return list;
+	}
+
+	static <F, S, R> Iterable<R> createZipIterator(Iterable<F> first,
+			Iterable<S> second, Func.v2<F, S, R> selector) {
+		List<R> results = createList();
+		Iterator<F> firstIterator = first.iterator();
+		Iterator<S> secondIterator = second.iterator();
+		while (firstIterator.hasNext() && secondIterator.hasNext()) {
+			results.add(selector.e(firstIterator.next(), secondIterator.next()));
+		}
+		return results;
+	}
+
+	static <S> ReadOnlyCollection<S> toReadOnlyCollection(Iterable<S> source) {
+		if (source == null)
+			return new ReadOnlyCollection<S>();
+		ReadOnlyCollection<S> ro = CastUtils.as(source);
+		if (ro != null)
+			return ro;
+		return new ReadOnlyCollection<S>(source);
 	}
 }

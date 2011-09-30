@@ -32,7 +32,9 @@ import static org.q4j.data.QUtils.createSkipIterator;
 import static org.q4j.data.QUtils.createSkipWhileIterator;
 import static org.q4j.data.QUtils.createTakeIterator;
 import static org.q4j.data.QUtils.createTakeWhileIterator;
+import static org.q4j.data.QUtils.createUnionIterator;
 import static org.q4j.data.QUtils.createWhereIterator;
+import static org.q4j.data.QUtils.createZipIterator;
 import static org.q4j.data.QUtils.moveNext;
 
 import java.math.BigInteger;
@@ -966,6 +968,27 @@ public class QIterable {
 		return createSelectManyIterator(source, collectionSelector, selector);
 	}
 
+	public static <S> boolean sequenceEqual(Iterable<S> first,
+			Iterable<S> second) {
+		return sequenceEqual(first, second, null);
+	}
+
+	public static <S> boolean sequenceEqual(Iterable<S> first,
+			Iterable<S> second, Comparator<S> comparer) {
+		check(first, second);
+		if (comparer == null)
+			comparer = APIUtils.DefaultComparator();
+		Iterator<S> firstIterator = first.iterator();
+		Iterator<S> secondIterator = second.iterator();
+		while (firstIterator.hasNext()) {
+			if (!secondIterator.hasNext())
+				return false;
+			if (comparer.compare(firstIterator.next(), secondIterator.next()) != 0)
+				return false;
+		}
+		return !secondIterator.hasNext();
+	}
+
 	public static <S> S single(Iterable<S> source) {
 		check(source);
 		v1<S, Boolean> func = APIUtils.Always();
@@ -1032,6 +1055,19 @@ public class QIterable {
 		return list;
 	}
 
+	public static <S> Iterable<S> union(Iterable<S> first, Iterable<S> second) {
+		check(first, second);
+		return union(first, second, null);
+	}
+
+	public static <S> Iterable<S> union(Iterable<S> first, Iterable<S> second,
+			Comparator<S> comparer) {
+		check(first, second);
+		if (comparer == null)
+			comparer = APIUtils.DefaultComparator();
+		return createUnionIterator(first, second, comparer);
+	}
+
 	public static <S> Iterable<S> where(Iterable<S> source,
 			Func.v1<S, Boolean> predicate) {
 		check(source, predicate);
@@ -1042,5 +1078,13 @@ public class QIterable {
 			Func.v2<S, Integer, Boolean> predicate) {
 		check(source, predicate);
 		return createWhereIterator(source, predicate);
+	}
+
+	public static <F, S, R> Iterable<R> zip(Iterable<F> first,
+			Iterable<S> second, Func.v2<F, S, R> resultSelector) {
+		check(first, second);
+		if (resultSelector == null)
+			throw new ArgumentException();
+		return createZipIterator(first, second, resultSelector);
 	}
 }
