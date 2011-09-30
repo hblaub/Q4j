@@ -1,0 +1,10 @@
+ Queries4Java
+==============
+
+License: LGPL v3
+
+Requirements: Java SE 6
+
+Description:
+
+Queries4Java (Q4j) is a library designed to filter, sort and use collections in Java easier than the initial framework intended it.
