@@ -30,6 +30,7 @@ import org.q4j.api.APIUtils;
 import org.q4j.api.Func;
 import org.q4j.api.IGrouping;
 import org.q4j.exceptions.ArgumentException;
+import org.q4j.exceptions.EmptySourceSequence;
 import org.q4j.exceptions.MoreThanOneElementException;
 import org.q4j.exceptions.NoElementFoundException;
 import org.q4j.exceptions.OutOfRangeException;
@@ -128,6 +129,18 @@ class QUtils {
 			throw new OutOfRangeException();
 
 		return null;
+	}
+
+	static <T, U> U iterate(Iterable<T> source, U initValue,
+			Func.v2<T, U, U> selector) {
+		boolean empty = true;
+		for (T element : source) {
+			initValue = selector.e(element, initValue);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return initValue;
 	}
 
 	static <S> S first(Iterable<S> source, Func.v1<S, Boolean> predicate,

@@ -35,6 +35,7 @@ import static org.q4j.data.QUtils.createTakeWhileIterator;
 import static org.q4j.data.QUtils.createWhereIterator;
 import static org.q4j.data.QUtils.moveNext;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -474,6 +475,452 @@ public class QIterable {
 		if (empty)
 			return null;
 		return max;
+	}
+
+	public static <S> S max(Iterable<S> source) {
+		check(source);
+		Comparator<S> comparer = APIUtils.DefaultComparator();
+		S max = null;
+		for (S element : source) {
+			if (element == null)
+				continue;
+			if (max == null || comparer.compare(element, max) > 0)
+				max = element;
+		}
+		return max;
+	}
+
+	public static <S> int max(Iterable<S> source, Func.v1<S, Integer> selector,
+			int... i) {
+		check(source, selector);
+		boolean empty = true;
+		int max = Integer.MIN_VALUE;
+		for (S element : source) {
+			max = Math.max(selector.e(element), max);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return max;
+	}
+
+	public static <S> long max(Iterable<S> source, Func.v1<S, Long> selector,
+			long... l) {
+		check(source, selector);
+		boolean empty = true;
+		long max = Long.MIN_VALUE;
+		for (S element : source) {
+			max = Math.max(selector.e(element), max);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return max;
+	}
+
+	public static <S> double max(Iterable<S> source,
+			Func.v1<S, Double> selector, double... d) {
+		check(source, selector);
+		boolean empty = true;
+		double max = Double.MIN_VALUE;
+		for (S element : source) {
+			max = Math.max(selector.e(element), max);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return max;
+	}
+
+	public static <S> float max(Iterable<S> source, Func.v1<S, Float> selector,
+			float... f) {
+		check(source, selector);
+		boolean empty = true;
+		float max = Float.MIN_VALUE;
+		for (S element : source) {
+			max = Math.max(selector.e(element), max);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return max;
+	}
+
+	public static <S> BigInteger max(Iterable<S> source,
+			Func.v1<S, BigInteger> selector) {
+		check(source, selector);
+		boolean empty = true;
+		BigInteger max = BigInteger.ZERO;
+		for (S element : source) {
+			max = max.max(selector.e(element));
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return max;
+	}
+
+	public static <S> Integer max(Iterable<S> source,
+			Func.v1<S, Integer> selector, Integer... i) {
+		check(source, selector);
+		boolean empty = true;
+		Integer max = null;
+		for (S element : source) {
+			Integer item = selector.e(element);
+			if (max == null)
+				max = item;
+			else if (item > max)
+				max = item;
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return max;
+	}
+
+	public static <S> Long max(Iterable<S> source, Func.v1<S, Long> selector,
+			Long... l) {
+		check(source, selector);
+		boolean empty = true;
+		Long max = null;
+		for (S element : source) {
+			Long item = selector.e(element);
+			if (max == null)
+				max = item;
+			else if (item > max)
+				max = item;
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return max;
+	}
+
+	public static <S> Double max(Iterable<S> source,
+			Func.v1<S, Double> selector, Double... d) {
+		check(source, selector);
+		boolean empty = true;
+		Double max = null;
+		for (S element : source) {
+			Double item = selector.e(element);
+			if (max == null)
+				max = item;
+			else if (item > max)
+				max = item;
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return max;
+	}
+
+	public static <S> Float max(Iterable<S> source, Func.v1<S, Float> selector,
+			Float... f) {
+		check(source, selector);
+		boolean empty = true;
+		Float max = null;
+		for (S element : source) {
+			Float item = selector.e(element);
+			if (max == null)
+				max = item;
+			else if (item > max)
+				max = item;
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return max;
+	}
+
+	public static <S, R> R max(Iterable<S> source, Func.v1<S, R> selector,
+			Object... o) {
+		check(source, selector);
+		return max(select(source, selector));
+	}
+
+	public static int min(Iterable<Integer> source, int... i) {
+		check(source);
+		boolean empty = true;
+		int min = Integer.MAX_VALUE;
+		for (int element : source) {
+			min = Math.min(element, min);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static long min(Iterable<Long> source, long... l) {
+		check(source);
+		boolean empty = true;
+		long min = Long.MAX_VALUE;
+		for (long element : source) {
+			min = Math.min(element, min);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static double min(Iterable<Double> source, double... d) {
+		check(source);
+		boolean empty = true;
+		double min = Double.MAX_VALUE;
+		for (double element : source) {
+			min = Math.min(element, min);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static float min(Iterable<Float> source, float... f) {
+		check(source);
+		boolean empty = true;
+		float min = Float.MAX_VALUE;
+		for (float element : source) {
+			min = Math.min(element, min);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static BigInteger min(Iterable<BigInteger> source, BigInteger... b) {
+		check(source);
+		boolean empty = true;
+		BigInteger min = BigInteger.valueOf(Long.MAX_VALUE);
+		for (BigInteger element : source) {
+			min = min.min(element);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static Integer min(Iterable<Integer> source, Integer... i) {
+		check(source);
+		boolean empty = true;
+		int min = Integer.MAX_VALUE;
+		for (Integer element : source) {
+			if (element == null)
+				continue;
+			min = Math.min(element.intValue(), min);
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return min;
+	}
+
+	public static Long min(Iterable<Long> source, Long... l) {
+		check(source);
+		boolean empty = true;
+		long min = Long.MAX_VALUE;
+		for (Long element : source) {
+			if (element == null)
+				continue;
+			min = Math.min(element.longValue(), min);
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return min;
+	}
+
+	public static Double min(Iterable<Double> source, Double... d) {
+		check(source);
+		boolean empty = true;
+		double min = Double.MAX_VALUE;
+		for (Double element : source) {
+			if (element == null)
+				continue;
+			min = Math.min(element.doubleValue(), min);
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return min;
+	}
+
+	public static Float min(Iterable<Float> source, Float... f) {
+		check(source);
+		boolean empty = true;
+		float min = Float.MAX_VALUE;
+		for (Float element : source) {
+			if (element == null)
+				continue;
+			min = Math.min(element.floatValue(), min);
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return min;
+	}
+
+	public static <S> S min(Iterable<S> source) {
+		check(source);
+		Comparator<S> comparer = APIUtils.DefaultComparator();
+		S min = null;
+		for (S element : source) {
+			if (element == null)
+				continue;
+			if (min == null || comparer.compare(element, min) < 0)
+				min = element;
+		}
+		return min;
+	}
+
+	public static <S> int min(Iterable<S> source, Func.v1<S, Integer> selector,
+			int... i) {
+		check(source, selector);
+		boolean empty = true;
+		int min = Integer.MAX_VALUE;
+		for (S element : source) {
+			min = Math.min(selector.e(element), min);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static <S> long min(Iterable<S> source, Func.v1<S, Long> selector,
+			long... l) {
+		check(source, selector);
+		boolean empty = true;
+		long min = Long.MAX_VALUE;
+		for (S element : source) {
+			min = Math.min(selector.e(element), min);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static <S> double min(Iterable<S> source,
+			Func.v1<S, Double> selector, double... d) {
+		check(source, selector);
+		boolean empty = true;
+		double min = Double.MAX_VALUE;
+		for (S element : source) {
+			min = Math.min(selector.e(element), min);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static <S> float min(Iterable<S> source, Func.v1<S, Float> selector,
+			float... f) {
+		check(source, selector);
+		boolean empty = true;
+		float min = Float.MAX_VALUE;
+		for (S element : source) {
+			min = Math.min(selector.e(element), min);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static <S> BigInteger min(Iterable<S> source,
+			Func.v1<S, BigInteger> selector, BigInteger... b) {
+		check(source, selector);
+		boolean empty = true;
+		BigInteger min = BigInteger.valueOf(Long.MAX_VALUE);
+		for (S element : source) {
+			min = min.min(selector.e(element));
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return min;
+	}
+
+	public static <S> Integer min(Iterable<S> source,
+			Func.v1<S, Integer> selector, Integer... i) {
+		check(source, selector);
+		boolean empty = true;
+		Integer min = null;
+		for (S element : source) {
+			Integer item = selector.e(element);
+			if (min == null)
+				min = item;
+			else if (item < min)
+				min = item;
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return min;
+	}
+
+	public static <S> Long min(Iterable<S> source, Func.v1<S, Long> selector,
+			Long... l) {
+		check(source, selector);
+		boolean empty = true;
+		Long min = null;
+		for (S element : source) {
+			Long item = selector.e(element);
+			if (min == null)
+				min = item;
+			else if (item < min)
+				min = item;
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return min;
+	}
+
+	public static <S> Float min(Iterable<S> source, Func.v1<S, Float> selector,
+			Float... f) {
+		check(source, selector);
+		boolean empty = true;
+		Float min = null;
+		for (S element : source) {
+			Float item = selector.e(element);
+			if (min == null)
+				min = item;
+			else if (item < min)
+				min = item;
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return min;
+	}
+
+	public static <S> Double min(Iterable<S> source,
+			Func.v1<S, Double> selector, Double... d) {
+		check(source, selector);
+		boolean empty = true;
+		Double min = null;
+		for (S element : source) {
+			Double item = selector.e(element);
+			if (min == null)
+				min = item;
+			else if (item < min)
+				min = item;
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return min;
+	}
+
+	public static <S, R> R min(Iterable<S> source, Func.v1<S, R> selector) {
+		check(source, selector);
+		return min(select(source, selector));
 	}
 
 	public static <S, R> Iterable<R> ofType(Iterable<S> source) {
