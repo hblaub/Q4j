@@ -17,6 +17,12 @@
 package org.q4j.data;
 
 import static org.q4j.data.QUtils.check;
+import static org.q4j.data.QUtils.check2;
+import static org.q4j.data.QUtils.createCastIterator;
+import static org.q4j.data.QUtils.createConcatIterator;
+import static org.q4j.data.QUtils.createDistinctIterator;
+import static org.q4j.data.QUtils.createExceptIterator;
+import static org.q4j.data.QUtils.createGroupByIterator;
 import static org.q4j.data.QUtils.createList;
 import static org.q4j.data.QUtils.createOfTypeIterator;
 import static org.q4j.data.QUtils.createSelectIterator;
@@ -36,11 +42,45 @@ import java.util.List;
 import org.q4j.api.APIUtils;
 import org.q4j.api.Func;
 import org.q4j.api.Func.v1;
+import org.q4j.api.IGrouping;
+import org.q4j.exceptions.ArgumentException;
 import org.q4j.exceptions.EmptySourceSequence;
+import org.q4j.exceptions.OutOfRangeException;
 
 public class QIterable {
 
 	private QIterable() {
+	}
+
+	public static <S> S aggregate(Iterable<S> source, Func.v2<S, S, S> func) {
+		check(source, func);
+		Iterator<S> iterator = source.iterator();
+		if (!iterator.hasNext())
+			throw new EmptySourceSequence();
+		S folded = iterator.next();
+		while (iterator.hasNext())
+			folded = func.e(folded, iterator.next());
+		return folded;
+	}
+
+	public static <S, A> A aggregate(Iterable<S> source, A seed,
+			Func.v2<A, S, A> func) {
+		check2(source, func);
+		A folded = seed;
+		for (S element : source)
+			folded = func.e(folded, element);
+		return folded;
+	}
+
+	public static <S, A, R> R aggregate(Iterable<S> source, A seed,
+			Func.v2<A, S, A> func, Func.v1<A, R> resultSelector) {
+		check2(source, func);
+		if (resultSelector == null)
+			throw new ArgumentException();
+		A result = seed;
+		for (S e : source)
+			result = func.e(result, e);
+		return resultSelector.e(result);
 	}
 
 	public static <S> boolean all(Iterable<S> source,
@@ -71,6 +111,19 @@ public class QIterable {
 
 	public static <S> Iterable<S> asIterable(Iterable<S> source) {
 		return source;
+	}
+
+	public static <S, R> Iterable<R> cast(Iterable<S> source) {
+		check(source);
+		Iterable<R> actual = CastUtils.as(source);
+		if (actual != null)
+			return actual;
+		return createCastIterator(source);
+	}
+
+	public static <S> Iterable<S> concat(Iterable<S> first, Iterable<S> second) {
+		check(first, second);
+		return createConcatIterator(first, second);
 	}
 
 	public static <S> boolean contains(Iterable<S> source, S value) {
@@ -112,6 +165,54 @@ public class QIterable {
 		return counter;
 	}
 
+	public static <S> Iterable<S> distinct(Iterable<S> source) {
+		return distinct(source, null);
+	}
+
+	public static <S> Iterable<S> distinct(Iterable<S> source,
+			Comparator<S> comparer) {
+		check(source);
+		if (comparer == null)
+			comparer = APIUtils.DefaultComparator();
+		return createDistinctIterator(source, comparer);
+	}
+
+	public static <S> S elementAt(Iterable<S> source, int index) {
+		check(source);
+		if (index < 0)
+			throw new OutOfRangeException();
+		List<S> list = CastUtils.as(source);
+		if (list != null)
+			return list.get(index);
+		return QUtils.elementAt(source, index, true);
+	}
+
+	public static <S> S elementAtOrDefault(Iterable<S> source, int index) {
+		check(source);
+		if (index < 0)
+			return null;
+		List<S> list = CastUtils.as(source);
+		if (list != null)
+			return index < list.size() ? list.get(index) : null;
+		return QUtils.elementAt(source, index, false);
+	}
+
+	public static <R> Iterable<R> empty() {
+		return createList();
+	}
+
+	public static <S> Iterable<S> except(Iterable<S> first, Iterable<S> second) {
+		return except(first, second, null);
+	}
+
+	public static <S> Iterable<S> except(Iterable<S> first, Iterable<S> second,
+			Comparator<S> comparer) {
+		check(first, second);
+		if (comparer == null)
+			comparer = APIUtils.DefaultComparator();
+		return createExceptIterator(first, second, comparer);
+	}
+
 	public static <S> S first(Iterable<S> source) {
 		check(source);
 		List<S> list = CastUtils.as(source);
@@ -124,6 +225,78 @@ public class QIterable {
 				return iterator.next();
 		}
 		throw new EmptySourceSequence();
+	}
+
+	public static <S> S first(Iterable<S> source, Func.v1<S, Boolean> predicate) {
+		check(source, predicate);
+		return QUtils.first(source, predicate, true);
+	}
+
+	public static <S> S firstOrDefault(Iterable<S> source) {
+		check(source);
+		v1<S, Boolean> func = APIUtils.Always();
+		return QUtils.first(source, func, false);
+	}
+
+	public static <S> S firstOrDefault(Iterable<S> source,
+			Func.v1<S, Boolean> predicate) {
+		check(source, predicate);
+		return QUtils.first(source, predicate, false);
+	}
+
+	public static <S, K> Iterable<IGrouping<K, S>> groupBy(Iterable<S> source,
+			Func.v1<S, K> keySelector) {
+		Comparator<K> comparer = null;
+		return groupBy(source, keySelector, comparer);
+	}
+
+	public static <S, K> Iterable<IGrouping<K, S>> groupBy(Iterable<S> source,
+			Func.v1<S, K> keySelector, Comparator<K> comparer) {
+		check(source, keySelector);
+		return createGroupByIterator(source, keySelector, comparer);
+	}
+
+	public static <S, K, E> Iterable<IGrouping<K, E>> groupBy(
+			Iterable<S> source, Func.v1<S, K> keySelector,
+			Func.v1<S, E> elementSelector) {
+		Comparator<K> comparer = null;
+		return groupBy(source, keySelector, elementSelector, comparer);
+	}
+
+	public static <S, K, E> Iterable<IGrouping<K, E>> groupBy(
+			Iterable<S> source, Func.v1<S, K> keySelector,
+			Func.v1<S, E> elementSelector, Comparator<K> comparer) {
+		check(source, keySelector, elementSelector);
+		return createGroupByIterator(source, keySelector, elementSelector,
+				comparer);
+	}
+
+	public static <S, K, E, R> Iterable<R> groupBy(Iterable<S> source,
+			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector,
+			Func.v2<K, Iterable<E>, R> resultSelector) {
+		return groupBy(source, keySelector, elementSelector, resultSelector,
+				null);
+	}
+
+	public static <S, K, E, R> Iterable<R> groupBy(Iterable<S> source,
+			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector,
+			Func.v2<K, Iterable<E>, R> resultSelector, Comparator<K> comparer) {
+		check(source, keySelector, elementSelector, resultSelector);
+		return createGroupByIterator(source, keySelector, elementSelector,
+				resultSelector, comparer);
+	}
+
+	public static <S, K, R> Iterable<R> groupBy(Iterable<S> source,
+			Func.v1<S, K> keySelector, Func.v2<K, Iterable<S>, R> resultSelector) {
+		return groupBy(source, keySelector, resultSelector, null);
+	}
+
+	public static <S, K, R> Iterable<R> groupBy(Iterable<S> source,
+			Func.v1<S, K> keySelector,
+			Func.v2<K, Iterable<S>, R> resultSelector, Comparator<K> comparer) {
+		check2(source, keySelector, resultSelector);
+		return createGroupByIterator(source, keySelector, resultSelector,
+				comparer);
 	}
 
 	public static <S> S last(Iterable<S> source) {
