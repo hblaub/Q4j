@@ -23,6 +23,7 @@ import static org.q4j.data.QUtils.createConcatIterator;
 import static org.q4j.data.QUtils.createDistinctIterator;
 import static org.q4j.data.QUtils.createExceptIterator;
 import static org.q4j.data.QUtils.createGroupByIterator;
+import static org.q4j.data.QUtils.createIntersectIterator;
 import static org.q4j.data.QUtils.createList;
 import static org.q4j.data.QUtils.createOfTypeIterator;
 import static org.q4j.data.QUtils.createSelectIterator;
@@ -297,6 +298,19 @@ public class QIterable {
 		check2(source, keySelector, resultSelector);
 		return createGroupByIterator(source, keySelector, resultSelector,
 				comparer);
+	}
+
+	public static <S> Iterable<S> intersect(Iterable<S> first,
+			Iterable<S> second) {
+		return intersect(first, second, null);
+	}
+
+	public static <S> Iterable<S> intersect(Iterable<S> first,
+			Iterable<S> second, Comparator<S> comparer) {
+		check(first, second);
+		if (comparer == null)
+			comparer = APIUtils.DefaultComparator();
+		return createIntersectIterator(first, second, comparer);
 	}
 
 	public static <S> S last(Iterable<S> source) {

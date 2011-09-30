@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.q4j.api.APIUtils;
 import org.q4j.api.Func;
@@ -373,6 +374,17 @@ class QUtils {
 				keySelector, comparer);
 		for (IGrouping<K, S> group : groups)
 			results.add(resultSelector.e(group.getKey(), group));
+		return results;
+	}
+
+	static <S> Iterable<S> createIntersectIterator(Iterable<S> first,
+			Iterable<S> second, Comparator<S> comparer) {
+		List<S> results = createList();
+		Set<S> items = new HashSet<S>();
+		for (S element : first) {
+			if (items.remove(element))
+				results.add(element);
+		}
 		return results;
 	}
 
