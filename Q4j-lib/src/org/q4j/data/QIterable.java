@@ -364,6 +364,118 @@ public class QIterable {
 		return counter;
 	}
 
+	public static int max(Iterable<Integer> source, int... i) {
+		check(source);
+		boolean empty = true;
+		int max = Integer.MIN_VALUE;
+		for (int element : source) {
+			max = Math.max(element, max);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return max;
+	}
+
+	public static long max(Iterable<Long> source, long... l) {
+		check(source);
+		boolean empty = true;
+		long max = Long.MIN_VALUE;
+		for (long element : source) {
+			max = Math.max(element, max);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return max;
+	}
+
+	public static double max(Iterable<Double> source, double... d) {
+		check(source);
+		boolean empty = true;
+		double max = Double.MIN_VALUE;
+		for (double element : source) {
+			max = Math.max(element, max);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return max;
+	}
+
+	public static float max(Iterable<Float> source, float... f) {
+		check(source);
+		boolean empty = true;
+		float max = Float.MIN_VALUE;
+		for (float element : source) {
+			max = Math.max(element, max);
+			empty = false;
+		}
+		if (empty)
+			throw new EmptySourceSequence();
+		return max;
+	}
+
+	public static Integer max(Iterable<Integer> source, Integer... i) {
+		check(source);
+		boolean empty = true;
+		int max = Integer.MIN_VALUE;
+		for (Integer element : source) {
+			if (element == null)
+				continue;
+			max = Math.max(element.intValue(), max);
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return max;
+	}
+
+	public static Long max(Iterable<Long> source, Long... l) {
+		check(source);
+		boolean empty = true;
+		long max = Long.MIN_VALUE;
+		for (Long element : source) {
+			if (element == null)
+				continue;
+			max = Math.max(element.longValue(), max);
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return max;
+	}
+
+	public static Float max(Iterable<Float> source, Float... f) {
+		check(source);
+		boolean empty = true;
+		float max = Float.MIN_VALUE;
+		for (Float element : source) {
+			if (element == null)
+				continue;
+			max = Math.max(element.floatValue(), max);
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return max;
+	}
+
+	public static Double max(Iterable<Double> source, Double... d) {
+		check(source);
+		boolean empty = true;
+		double max = Double.MIN_VALUE;
+		for (Double element : source) {
+			if (element == null)
+				continue;
+			max = Math.max(element.doubleValue(), max);
+			empty = false;
+		}
+		if (empty)
+			return null;
+		return max;
+	}
+
 	public static <S, R> Iterable<R> ofType(Iterable<S> source) {
 		check(source);
 		return createOfTypeIterator(source);
