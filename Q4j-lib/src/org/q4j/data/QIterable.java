@@ -40,13 +40,16 @@ import static org.q4j.data.QUtils.moveNext;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.q4j.api.APIUtils;
 import org.q4j.api.Func;
 import org.q4j.api.Func.v1;
 import org.q4j.api.IGrouping;
+import org.q4j.api.ILookup;
 import org.q4j.exceptions.ArgumentException;
 import org.q4j.exceptions.EmptySourceSequence;
 import org.q4j.exceptions.OutOfRangeException;
@@ -1053,6 +1056,74 @@ public class QIterable {
 			list.add(element);
 		}
 		return list;
+	}
+
+	public static <S, K> ILookup<K, S> toLookup(Iterable<S> source,
+			Func.v1<S, K> keySelector) {
+		v1<S, S> func = APIUtils.Identity();
+		return toLookup(source, keySelector, func, null);
+	}
+
+	public static <S, K> ILookup<K, S> toLookup(Iterable<S> source,
+			Func.v1<S, K> keySelector, Comparator<K> comparer) {
+		v1<S, S> func = APIUtils.Identity();
+		return toLookup(source, keySelector, func, comparer);
+	}
+
+	public static <S, K, E> ILookup<K, E> toLookup(Iterable<S> source,
+			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector) {
+		return toLookup(source, keySelector, elementSelector, null);
+	}
+
+	public static <S, K, E> ILookup<K, E> toLookup(Iterable<S> source,
+			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector,
+			Comparator<K> comparer) {
+		check(source, keySelector, elementSelector);
+		List<E> nullKeyElements = null;
+		Map<K, List<E>> map = new HashMap<K, List<E>>();
+		for (S element : source) {
+			K key = keySelector.e(element);
+			List<E> list = null;
+			if (key == null) {
+				if (nullKeyElements == null)
+					nullKeyElements = createList();
+				list = nullKeyElements;
+			} else if (!map.containsKey(key)) {
+				list = createList();
+				map.put(key, list);
+			}
+			list.add(elementSelector.e(element));
+		}
+		return new Lookup<K, E>(map, nullKeyElements);
+	}
+
+	public static <S, K, E> Map<K, E> toMap(Iterable<S> source,
+			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector) {
+		return toMap(source, keySelector, elementSelector, null);
+	}
+
+	public static <S, K, E> Map<K, E> toMap(Iterable<S> source,
+			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector,
+			Comparator<K> comparer) {
+		check(source, keySelector, elementSelector);
+		if (comparer == null)
+			comparer = APIUtils.DefaultComparator();
+		Map<K, E> dict = new HashMap<K, E>();
+		for (S e : source)
+			dict.put(keySelector.e(e), elementSelector.e(e));
+		return dict;
+	}
+
+	public static <S, K> Map<K, S> toMap(Iterable<S> source,
+			Func.v1<S, K> keySelector) {
+		Comparator<K> comparer = null;
+		return toMap(source, keySelector, comparer);
+	}
+
+	public static <S, K> Map<K, S> toMap(Iterable<S> source,
+			Func.v1<S, K> keySelector, Comparator<K> comparer) {
+		v1<S, S> func = APIUtils.Identity();
+		return toMap(source, keySelector, func, comparer);
 	}
 
 	public static <S> Iterable<S> union(Iterable<S> first, Iterable<S> second) {
