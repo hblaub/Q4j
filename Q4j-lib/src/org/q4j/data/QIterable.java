@@ -120,6 +120,269 @@ public class QIterable {
 		return source;
 	}
 
+	public static int average(Iterable<Integer> source, int... i) {
+		check(source);
+		long total = 0;
+		int count = 0;
+		for (int element : source) {
+			total = total + element;
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return (int) (total / (double) count);
+	}
+
+	public static long average(Iterable<Long> source, long... l) {
+		check(source);
+		long total = 0;
+		long count = 0;
+		for (long element : source) {
+			total += element;
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return (long) (total / (double) count);
+	}
+
+	public static double average(Iterable<Double> source, double... d) {
+		check(source);
+		double total = 0;
+		long count = 0;
+		for (double element : source) {
+			total += element;
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return total / count;
+	}
+
+	public static float average(Iterable<Float> source, float... f) {
+		check(source);
+		float total = 0;
+		long count = 0;
+		for (float element : source) {
+			total += element;
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return total / count;
+	}
+
+	public static BigInteger average(Iterable<BigInteger> source) {
+		check(source);
+		BigInteger total = BigInteger.ZERO;
+		long count = 0;
+		for (BigInteger element : source) {
+			total.add(element);
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return total.divide(BigInteger.valueOf(count));
+	}
+
+	public static Integer average(Iterable<Integer> source, Integer... i) {
+		check(source);
+		long total = 0;
+		long counter = 0;
+		for (Integer element : source) {
+			if (element == null)
+				continue;
+			total = total + element.intValue();
+			counter++;
+		}
+		if (counter == 0)
+			return null;
+		return (int) (total / (double) counter);
+	}
+
+	public static Long average(Iterable<Long> source, Long... l) {
+		check(source);
+		long total = 0;
+		long counter = 0;
+		for (Long element : source) {
+			if (element == null)
+				continue;
+			total = total + element.longValue();
+			counter++;
+		}
+		if (counter == 0)
+			return null;
+		return (long) (total / (double) counter);
+	}
+
+	public static Double average(Iterable<Double> source, Double... d) {
+		check(source);
+		double total = 0;
+		long counter = 0;
+		for (Double element : source) {
+			if (element == null)
+				continue;
+			total = total + element.doubleValue();
+			counter++;
+		}
+		if (counter == 0)
+			return null;
+		return new Double(total / counter);
+	}
+
+	public static Float average(Iterable<Float> source, Float... f) {
+		check(source);
+		float total = 0;
+		long counter = 0;
+		for (Float element : source) {
+			if (element == null)
+				continue;
+			total = total + element.floatValue();
+			counter++;
+		}
+		if (counter == 0)
+			return null;
+		return new Float(total / counter);
+	}
+
+	public static <S> int average(Iterable<S> source,
+			Func.v1<S, Integer> selector, int... i) {
+		check(source, selector);
+		long total = 0;
+		long count = 0;
+		for (S element : source) {
+			total += selector.e(element);
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return (int) (total / (double) count);
+	}
+
+	public static <S> Integer average(Iterable<S> source,
+			Func.v1<S, Integer> selector, Integer... i) {
+		check(source, selector);
+		long total = 0;
+		long counter = 0;
+		for (S element : source) {
+			Integer value = selector.e(element);
+			if (value == null)
+				continue;
+			total = total + value.intValue();
+			counter++;
+		}
+		if (counter == 0)
+			return null;
+		return (int) (total / (double) counter);
+	}
+
+	public static <S> long average(Iterable<S> source,
+			Func.v1<S, Long> selector, long... l) {
+		check(source, selector);
+		long total = 0;
+		long count = 0;
+		for (S element : source) {
+			total = total + selector.e(element);
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return (long) (total / (double) count);
+	}
+
+	public static <S> Long average(Iterable<S> source,
+			Func.v1<S, Long> selector, Long... l) {
+		check(source, selector);
+		long total = 0;
+		long counter = 0;
+		for (S element : source) {
+			Long value = selector.e(element);
+			if (value == null)
+				continue;
+			total = total + value.longValue();
+			counter++;
+		}
+		if (counter == 0)
+			return null;
+		return (long) (total / (double) counter);
+	}
+
+	public static <S> double average(Iterable<S> source,
+			Func.v1<S, Double> selector, double... d) {
+		check(source, selector);
+		double total = 0;
+		long count = 0;
+		for (S element : source) {
+			total += selector.e(element);
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return total / count;
+	}
+
+	public static <S> Double average(Iterable<S> source,
+			Func.v1<S, Double> selector, Double... d) {
+		check(source, selector);
+		double total = 0;
+		long counter = 0;
+		for (S element : source) {
+			Double value = selector.e(element);
+			if (value == null)
+				continue;
+			total = total + value.doubleValue();
+			counter++;
+		}
+		if (counter == 0)
+			return null;
+		return new Double(total / counter);
+	}
+
+	public static <S> float average(Iterable<S> source,
+			Func.v1<S, Float> selector, float... f) {
+		check(source, selector);
+		float total = 0;
+		long count = 0;
+		for (S element : source) {
+			total += selector.e(element);
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return total / count;
+	}
+
+	public static <S> Float average(Iterable<S> source,
+			Func.v1<S, Float> selector, Float... f) {
+		check(source, selector);
+		float total = 0;
+		long counter = 0;
+		for (S element : source) {
+			Float value = selector.e(element);
+			if (value == null)
+				continue;
+			total = total + value.floatValue();
+			counter++;
+		}
+		if (counter == 0)
+			return null;
+		return new Float(total / counter);
+	}
+
+	public static <S> BigInteger average(Iterable<S> source,
+			Func.v1<S, BigInteger> selector, BigInteger... b) {
+		check(source, selector);
+		BigInteger total = BigInteger.ZERO;
+		long count = 0;
+		for (S element : source) {
+			total.add(selector.e(element));
+			count++;
+		}
+		if (count == 0)
+			throw new EmptySourceSequence();
+		return total.divide(BigInteger.valueOf(count));
+	}
+
 	public static <S, R> Iterable<R> cast(Iterable<S> source) {
 		check(source);
 		Iterable<R> actual = CastUtils.as(source);
