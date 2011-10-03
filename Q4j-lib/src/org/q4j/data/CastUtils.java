@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.q4j.data;
 
+import org.q4j.api.IDefaultValue;
+
 public class CastUtils {
 
 	@SuppressWarnings("unchecked")
@@ -27,5 +29,13 @@ public class CastUtils {
 			result = null;
 		}
 		return result;
+	}
+
+	public static <T> T defaultValue(Class<T> type) {
+		for (IDefaultValue<?> defaultValueType : DefaultValues.all) {
+			if (defaultValueType.isCompatible(type))
+				return as(defaultValueType.getDefault());
+		}
+		return null;
 	}
 }
