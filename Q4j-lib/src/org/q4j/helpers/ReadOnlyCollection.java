@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public 
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.q4j.data;
+package org.q4j.helpers;
 
 import java.util.Arrays;
 import java.util.Collection;

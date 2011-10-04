@@ -26,8 +26,8 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.q4j.data.xml.AttributeIterable;
-import org.q4j.data.xml.NodeIterable;
+import org.q4j.helpers.AttributeIterable;
+import org.q4j.helpers.NodeIterable;
 import org.q4j.utils.CastUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;

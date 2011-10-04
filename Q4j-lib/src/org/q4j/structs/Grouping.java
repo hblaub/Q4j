@@ -14,50 +14,32 @@
  * You should have received a copy of the GNU Lesser General Public 
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.q4j.data.xml;
+package org.q4j.structs;
 
 import java.util.Iterator;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.q4j.api.IGrouping;
 
-public class NodeIterable implements Iterable<Node> {
-	protected NodeList nodeList;
+public class Grouping<K, T> implements IGrouping<K, T> {
+	protected K key;
+	protected Iterable<T> group;
 
-	public NodeIterable(NodeList nodeList) {
-		this.nodeList = nodeList;
-	}
-
-	public static NodeIterable create(NodeList nodeList) {
-		return new NodeIterable(nodeList);
+	public Grouping(K key, Iterable<T> group) {
+		this.group = group;
+		this.key = key;
 	}
 
 	@Override
-	public Iterator<Node> iterator() {
-		return new NodeIterator(nodeList);
+	public K getKey() {
+		return key;
 	}
 
-	static class NodeIterator implements Iterator<Node> {
-		protected NodeList nodeList;
-		protected int index;
+	public void setKey(K key) {
+		this.key = key;
+	}
 
-		public NodeIterator(NodeList nodeList) {
-			this.nodeList = nodeList;
-			index = 0;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return index < nodeList.getLength();
-		}
-
-		@Override
-		public Node next() {
-			return nodeList.item(index++);
-		}
-
-		@Override
-		public void remove() {
-		}
+	@Override
+	public Iterator<T> iterator() {
+		return group.iterator();
 	}
 }

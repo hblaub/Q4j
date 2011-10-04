@@ -50,8 +50,9 @@ import org.q4j.api.Func.F1;
 import org.q4j.api.IGrouping;
 import org.q4j.api.ILookup;
 import org.q4j.exceptions.ArgumentException;
-import org.q4j.exceptions.EmptySourceSequence;
+import org.q4j.exceptions.EmptySourceException;
 import org.q4j.exceptions.OutOfRangeException;
+import org.q4j.structs.Lookup;
 import org.q4j.utils.APIUtils;
 import org.q4j.utils.CastUtils;
 
@@ -64,7 +65,7 @@ public class QIterable {
 		check(source, func);
 		Iterator<S> iterator = source.iterator();
 		if (!iterator.hasNext())
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		S folded = iterator.next();
 		while (iterator.hasNext())
 			folded = func.e(folded, iterator.next());
@@ -130,7 +131,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return (int) (total / (double) count);
 	}
 
@@ -143,7 +144,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return (long) (total / (double) count);
 	}
 
@@ -156,7 +157,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return total / count;
 	}
 
@@ -169,7 +170,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return total / count;
 	}
 
@@ -182,7 +183,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return total.divide(BigInteger.valueOf(count));
 	}
 
@@ -256,7 +257,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return (int) (total / (double) count);
 	}
 
@@ -287,7 +288,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return (long) (total / (double) count);
 	}
 
@@ -318,7 +319,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return total / count;
 	}
 
@@ -349,7 +350,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return total / count;
 	}
 
@@ -380,7 +381,7 @@ public class QIterable {
 			count++;
 		}
 		if (count == 0)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return total.divide(BigInteger.valueOf(count));
 	}
 
@@ -495,7 +496,7 @@ public class QIterable {
 			if (iterator.hasNext())
 				return iterator.next();
 		}
-		throw new EmptySourceSequence();
+		throw new EmptySourceException();
 	}
 
 	public static <S> S first(Iterable<S> source, Func.F1<S, Boolean> predicate) {
@@ -587,7 +588,7 @@ public class QIterable {
 		check(source);
 		Collection<S> collection = CastUtils.as(source);
 		if (collection != null && collection.isEmpty())
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		List<S> list = CastUtils.as(source);
 		if (list != null)
 			return list.get(list.size() - 1);
@@ -643,7 +644,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return max;
 	}
 
@@ -656,7 +657,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return max;
 	}
 
@@ -669,7 +670,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return max;
 	}
 
@@ -682,7 +683,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return max;
 	}
 
@@ -769,7 +770,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return max;
 	}
 
@@ -783,7 +784,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return max;
 	}
 
@@ -797,7 +798,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return max;
 	}
 
@@ -811,7 +812,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return max;
 	}
 
@@ -825,7 +826,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return max;
 	}
 
@@ -916,7 +917,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 
@@ -929,7 +930,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 
@@ -942,7 +943,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 
@@ -955,7 +956,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 
@@ -968,7 +969,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 
@@ -1055,7 +1056,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 
@@ -1069,7 +1070,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 
@@ -1083,7 +1084,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 
@@ -1097,7 +1098,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 
@@ -1111,7 +1112,7 @@ public class QIterable {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return min;
 	}
 

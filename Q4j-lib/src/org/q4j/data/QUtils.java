@@ -29,14 +29,19 @@ import java.util.Set;
 import org.q4j.api.Func;
 import org.q4j.api.IGrouping;
 import org.q4j.exceptions.ArgumentException;
-import org.q4j.exceptions.EmptySourceSequence;
+import org.q4j.exceptions.EmptySourceException;
 import org.q4j.exceptions.MoreThanOneElementException;
 import org.q4j.exceptions.NoElementFoundException;
 import org.q4j.exceptions.OutOfRangeException;
+import org.q4j.helpers.ReadOnlyCollection;
+import org.q4j.structs.Grouping;
 import org.q4j.utils.APIUtils;
 import org.q4j.utils.CastUtils;
 
 class QUtils {
+
+	private QUtils() {
+	}
 
 	static <S> boolean moveNext(Iterator<S> iterator) {
 		if (iterator.hasNext()) {
@@ -140,7 +145,7 @@ class QUtils {
 			empty = false;
 		}
 		if (empty)
-			throw new EmptySourceSequence();
+			throw new EmptySourceException();
 		return initValue;
 	}
 

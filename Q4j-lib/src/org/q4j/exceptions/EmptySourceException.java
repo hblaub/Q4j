@@ -16,7 +16,7 @@
  ******************************************************************************/
 package org.q4j.exceptions;
 
-public class EmptySourceSequence extends RuntimeException {
+public class EmptySourceException extends RuntimeException {
 	private static final long serialVersionUID = 8160319776403715555L;
 
 }

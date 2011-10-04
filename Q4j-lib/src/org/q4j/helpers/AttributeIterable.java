@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public 
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.q4j.data.xml;
+package org.q4j.helpers;
 
 import java.util.Iterator;
 
@@ -23,7 +23,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 
 public class AttributeIterable implements Iterable<Attr> {
-	protected NamedNodeMap namedNodeMap;
+	protected final NamedNodeMap namedNodeMap;
 
 	public AttributeIterable(NamedNodeMap namedNodeMap) {
 		this.namedNodeMap = namedNodeMap;
