@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="." destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="org.q4j.utils,org.q4j.api,org.q4j.tests,org.q4j.helpers,org.q4j.data,org.q4j.exceptions,org.q4j.structs" source="1.6" sourcepath="src" splitindex="true" use="true" version="true">
+            <link href="http://download.oracle.com/javase/6/docs/api/"/>
+        </javadoc>
+    </target>
+</project>

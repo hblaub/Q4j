@@ -35,7 +35,7 @@ public interface Func {
 	/**
 	 * Function, which returns R and has one parameter
 	 * 
-	 * @param <T1>
+	 * @param <T>
 	 *            Type
 	 * @param <R>
 	 *            Return type

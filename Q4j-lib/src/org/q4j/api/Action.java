@@ -33,7 +33,7 @@ public interface Action {
 	/**
 	 * Action with one parameter
 	 * 
-	 * @param <T1>
+	 * @param <T>
 	 *            Type
 	 */
 	static interface A1<T> {
