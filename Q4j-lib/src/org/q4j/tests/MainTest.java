@@ -37,11 +37,11 @@ public class MainTest {
 		list.add("Nothing");
 
 		Iterable<Boolean> intList = ofType(select(
-				where(list, new Func.v1<String, Boolean>() {
+				where(list, new Func.F1<String, Boolean>() {
 					public Boolean e(String o) {
 						return o.startsWith("X");
 					}
-				}), new Func.v1<String, Double>() {
+				}), new Func.F1<String, Double>() {
 					public Double e(String o) {
 						return o.hashCode() * 1.5;
 					}

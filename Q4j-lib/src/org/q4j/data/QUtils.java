@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.q4j.api.APIUtils;
 import org.q4j.api.Func;
 import org.q4j.api.IGrouping;
 import org.q4j.exceptions.ArgumentException;
@@ -34,6 +33,8 @@ import org.q4j.exceptions.EmptySourceSequence;
 import org.q4j.exceptions.MoreThanOneElementException;
 import org.q4j.exceptions.NoElementFoundException;
 import org.q4j.exceptions.OutOfRangeException;
+import org.q4j.utils.APIUtils;
+import org.q4j.utils.CastUtils;
 
 class QUtils {
 
@@ -45,7 +46,7 @@ class QUtils {
 		return false;
 	}
 
-	static <S> S last(Iterable<S> source, Func.v1<S, Boolean> predicate,
+	static <S> S last(Iterable<S> source, Func.F1<S, Boolean> predicate,
 			boolean throwError) {
 		boolean empty = true;
 		S item = null;
@@ -63,7 +64,7 @@ class QUtils {
 	}
 
 	static <S, R> Iterable<R> createSelectManyIterator(Iterable<S> source,
-			Func.v2<S, Integer, Iterable<R>> selector) {
+			Func.F2<S, Integer, Iterable<R>> selector) {
 		List<R> list = createList();
 		int counter = 0;
 		for (S element : source) {
@@ -132,7 +133,7 @@ class QUtils {
 	}
 
 	static <T, U> U iterate(Iterable<T> source, U initValue,
-			Func.v2<T, U, U> selector) {
+			Func.F2<T, U, U> selector) {
 		boolean empty = true;
 		for (T element : source) {
 			initValue = selector.e(element, initValue);
@@ -143,7 +144,7 @@ class QUtils {
 		return initValue;
 	}
 
-	static <S> S first(Iterable<S> source, Func.v1<S, Boolean> predicate,
+	static <S> S first(Iterable<S> source, Func.F1<S, Boolean> predicate,
 			boolean throwError) {
 		for (S element : source)
 			if (predicate.e(element))
@@ -165,7 +166,7 @@ class QUtils {
 	}
 
 	static <S, R> Iterable<R> createSelectIterator(Iterable<S> source,
-			Func.v1<S, R> selector) {
+			Func.F1<S, R> selector) {
 		List<R> list = createList();
 		for (S element : source)
 			list.add(selector.e(element));
@@ -173,7 +174,7 @@ class QUtils {
 	}
 
 	static <S, R> Iterable<R> createSelectIterator(Iterable<S> source,
-			Func.v2<S, Integer, R> selector) {
+			Func.F2<S, Integer, R> selector) {
 		List<R> list = createList();
 		int counter = 0;
 		for (S element : source) {
@@ -184,8 +185,8 @@ class QUtils {
 	}
 
 	static <S, C, R> Iterable<R> createSelectManyIterator(Iterable<S> source,
-			Func.v1<S, Iterable<C>> collectionSelector,
-			Func.v2<S, C, R> selector) {
+			Func.F1<S, Iterable<C>> collectionSelector,
+			Func.F2<S, C, R> selector) {
 		List<R> list = createList();
 		for (S element : source)
 			for (C collection : collectionSelector.e(element))
@@ -194,7 +195,7 @@ class QUtils {
 	}
 
 	static <S, R> Iterable<R> createSelectManyIterator(Iterable<S> source,
-			Func.v1<S, Iterable<R>> selector) {
+			Func.F1<S, Iterable<R>> selector) {
 		List<R> list = createList();
 		for (S element : source)
 			for (R item : selector.e(element))
@@ -203,8 +204,8 @@ class QUtils {
 	}
 
 	static <S, C, R> Iterable<R> createSelectManyIterator(Iterable<S> source,
-			Func.v2<S, Integer, Iterable<C>> collectionSelector,
-			Func.v2<S, C, R> selector) {
+			Func.F2<S, Integer, Iterable<C>> collectionSelector,
+			Func.F2<S, C, R> selector) {
 		List<R> list = createList();
 		int counter = 0;
 		for (S element : source)
@@ -214,13 +215,13 @@ class QUtils {
 	}
 
 	static <T1, T2, R> void check(Iterable<T1> source,
-			Func.v2<T1, T2, R> predicate) {
+			Func.F2<T1, T2, R> predicate) {
 		if (source == null || predicate == null)
 			throw new ArgumentException();
 	}
 
-	static <S, K, E> void check(Iterable<S> source, Func.v1<S, K> func1,
-			Func.v1<S, E> func2) {
+	static <S, K, E> void check(Iterable<S> source, Func.F1<S, K> func1,
+			Func.F1<S, E> func2) {
 		if (source == null || func1 == null || func2 == null)
 			throw new ArgumentException();
 	}
@@ -235,36 +236,36 @@ class QUtils {
 			throw new ArgumentException();
 	}
 
-	static <S, K, E, R> void check(Iterable<S> source, Func.v1<S, K> func1,
-			Func.v1<S, E> func2, Func.v2<K, Iterable<E>, R> func3) {
+	static <S, K, E, R> void check(Iterable<S> source, Func.F1<S, K> func1,
+			Func.F1<S, E> func2, Func.F2<K, Iterable<E>, R> func3) {
 		if (source == null || func1 == null || func2 == null || func3 == null)
 			throw new ArgumentException();
 	}
 
-	static <S, A> void check2(Iterable<S> source, Func.v2<A, S, A> func) {
+	static <S, A> void check2(Iterable<S> source, Func.F2<A, S, A> func) {
 		if (source == null || func == null)
 			throw new ArgumentException();
 	}
 
 	static <S, C, R> void check(Iterable<S> source,
-			Func.v1<S, Iterable<C>> func1, Func.v2<S, C, R> func2) {
+			Func.F1<S, Iterable<C>> func1, Func.F2<S, C, R> func2) {
 		if (source == null || func1 == null || func2 == null)
 			throw new ArgumentException();
 	}
 
-	static <S, R> void check(Iterable<S> source, Func.v1<S, R> predicate) {
+	static <S, R> void check(Iterable<S> source, Func.F1<S, R> predicate) {
 		if (source == null || predicate == null)
 			throw new ArgumentException();
 	}
 
-	static <K, S, R> void check2(Iterable<S> source, Func.v1<S, K> func1,
-			Func.v2<K, Iterable<S>, R> func2) {
+	static <K, S, R> void check2(Iterable<S> source, Func.F1<S, K> func1,
+			Func.F2<K, Iterable<S>, R> func2) {
 		if (source == null || func1 == null || func2 == null)
 			throw new ArgumentException();
 	}
 
 	static <S, C, R> void check(Iterable<S> source,
-			Func.v2<S, Integer, Iterable<C>> func1, Func.v2<S, C, R> func2) {
+			Func.F2<S, Integer, Iterable<C>> func1, Func.F2<S, C, R> func2) {
 		if (source == null || func1 == null || func2 == null)
 			throw new ArgumentException();
 	}
@@ -273,7 +274,7 @@ class QUtils {
 			Comparator<K> comparer) {
 		Comparator<K> comparerInUse;
 		if (comparer == null)
-			comparerInUse = APIUtils.DefaultComparator();
+			comparerInUse = APIUtils.getDefaultComparator();
 		else
 			comparerInUse = comparer;
 		for (K iKey : items.keySet()) {
@@ -284,7 +285,7 @@ class QUtils {
 	}
 
 	static <S, K> Iterable<IGrouping<K, S>> createGroupByIterator(
-			Iterable<S> source, Func.v1<S, K> keySelector,
+			Iterable<S> source, Func.F1<S, K> keySelector,
 			Comparator<K> comparer) {
 		List<IGrouping<K, S>> results = createList();
 		HashMap<K, List<S>> groups = new HashMap<K, List<S>>();
@@ -326,8 +327,8 @@ class QUtils {
 	}
 
 	static <S, K, E> Iterable<IGrouping<K, E>> createGroupByIterator(
-			Iterable<S> source, Func.v1<S, K> keySelector,
-			Func.v1<S, E> elementSelector, Comparator<K> comparer) {
+			Iterable<S> source, Func.F1<S, K> keySelector,
+			Func.F1<S, E> elementSelector, Comparator<K> comparer) {
 		List<IGrouping<K, E>> results = createList();
 		Map<K, List<E>> groups = new HashMap<K, List<E>>();
 		List<E> nullList = createList();
@@ -369,8 +370,8 @@ class QUtils {
 	}
 
 	static <S, K, E, R> Iterable<R> createGroupByIterator(Iterable<S> source,
-			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector,
-			Func.v2<K, Iterable<E>, R> resultSelector, Comparator<K> comparer) {
+			Func.F1<S, K> keySelector, Func.F1<S, E> elementSelector,
+			Func.F2<K, Iterable<E>, R> resultSelector, Comparator<K> comparer) {
 		List<R> results = createList();
 		Iterable<IGrouping<K, E>> groups = QIterable.groupBy(source,
 				keySelector, elementSelector, comparer);
@@ -380,8 +381,8 @@ class QUtils {
 	}
 
 	static <S, K, R> Iterable<R> createGroupByIterator(Iterable<S> source,
-			Func.v1<S, K> keySelector,
-			Func.v2<K, Iterable<S>, R> resultSelector, Comparator<K> comparer) {
+			Func.F1<S, K> keySelector,
+			Func.F2<K, Iterable<S>, R> resultSelector, Comparator<K> comparer) {
 		List<R> results = createList();
 		Iterable<IGrouping<K, S>> groups = QIterable.groupBy(source,
 				keySelector, comparer);
@@ -401,7 +402,7 @@ class QUtils {
 		return results;
 	}
 
-	static <S> S single(Iterable<S> source, Func.v1<S, Boolean> predicate,
+	static <S> S single(Iterable<S> source, Func.F1<S, Boolean> predicate,
 			boolean throwError) {
 		boolean found = false;
 		S item = null;
@@ -433,7 +434,7 @@ class QUtils {
 	}
 
 	static <S> Iterable<S> createSkipWhileIterator(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		List<S> list = createList();
 		boolean yield = false;
 		for (S element : source) {
@@ -448,7 +449,7 @@ class QUtils {
 	}
 
 	static <S> Iterable<S> createSkipWhileIterator(Iterable<S> source,
-			Func.v2<S, Integer, Boolean> predicate) {
+			Func.F2<S, Integer, Boolean> predicate) {
 		List<S> list = createList();
 		int counter = 0;
 		boolean yield = false;
@@ -478,7 +479,7 @@ class QUtils {
 	}
 
 	static <S> Iterable<S> createTakeWhileIterator(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		List<S> list = createList();
 		for (S element : source) {
 			if (!predicate.e(element))
@@ -489,7 +490,7 @@ class QUtils {
 	}
 
 	static <S> Iterable<S> createTakeWhileIterator(Iterable<S> source,
-			Func.v2<S, Integer, Boolean> predicate) {
+			Func.F2<S, Integer, Boolean> predicate) {
 		List<S> list = createList();
 		int counter = 0;
 		for (S element : source) {
@@ -521,7 +522,7 @@ class QUtils {
 	}
 
 	static <S> Iterable<S> createWhereIterator(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		List<S> list = createList();
 		for (S element : source)
 			if (predicate.e(element))
@@ -530,7 +531,7 @@ class QUtils {
 	}
 
 	static <S> Iterable<S> createWhereIterator(Iterable<S> source,
-			Func.v2<S, Integer, Boolean> predicate) {
+			Func.F2<S, Integer, Boolean> predicate) {
 		List<S> list = createList();
 		int counter = 0;
 		for (S element : source) {
@@ -542,7 +543,7 @@ class QUtils {
 	}
 
 	static <F, S, R> Iterable<R> createZipIterator(Iterable<F> first,
-			Iterable<S> second, Func.v2<F, S, R> selector) {
+			Iterable<S> second, Func.F2<F, S, R> selector) {
 		List<R> results = createList();
 		Iterator<F> firstIterator = first.iterator();
 		Iterator<S> secondIterator = second.iterator();

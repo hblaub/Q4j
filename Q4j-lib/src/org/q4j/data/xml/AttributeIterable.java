@@ -2,7 +2,7 @@ package org.q4j.data.xml;
 
 import java.util.Iterator;
 
-import org.q4j.data.CastUtils;
+import org.q4j.utils.CastUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 

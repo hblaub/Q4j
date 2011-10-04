@@ -45,21 +45,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.q4j.api.APIUtils;
 import org.q4j.api.Func;
-import org.q4j.api.Func.v1;
+import org.q4j.api.Func.F1;
 import org.q4j.api.IGrouping;
 import org.q4j.api.ILookup;
 import org.q4j.exceptions.ArgumentException;
 import org.q4j.exceptions.EmptySourceSequence;
 import org.q4j.exceptions.OutOfRangeException;
+import org.q4j.utils.APIUtils;
+import org.q4j.utils.CastUtils;
 
 public class QIterable {
 
 	private QIterable() {
 	}
 
-	public static <S> S aggregate(Iterable<S> source, Func.v2<S, S, S> func) {
+	public static <S> S aggregate(Iterable<S> source, Func.F2<S, S, S> func) {
 		check(source, func);
 		Iterator<S> iterator = source.iterator();
 		if (!iterator.hasNext())
@@ -71,7 +72,7 @@ public class QIterable {
 	}
 
 	public static <S, A> A aggregate(Iterable<S> source, A seed,
-			Func.v2<A, S, A> func) {
+			Func.F2<A, S, A> func) {
 		check2(source, func);
 		A folded = seed;
 		for (S element : source)
@@ -80,7 +81,7 @@ public class QIterable {
 	}
 
 	public static <S, A, R> R aggregate(Iterable<S> source, A seed,
-			Func.v2<A, S, A> func, Func.v1<A, R> resultSelector) {
+			Func.F2<A, S, A> func, Func.F1<A, R> resultSelector) {
 		check2(source, func);
 		if (resultSelector == null)
 			throw new ArgumentException();
@@ -91,7 +92,7 @@ public class QIterable {
 	}
 
 	public static <S> boolean all(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		for (S element : source)
 			if (!predicate.e(element))
@@ -108,7 +109,7 @@ public class QIterable {
 	}
 
 	public static <S> boolean any(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		for (S element : source)
 			if (predicate.e(element))
@@ -246,7 +247,7 @@ public class QIterable {
 	}
 
 	public static <S> int average(Iterable<S> source,
-			Func.v1<S, Integer> selector, int... i) {
+			Func.F1<S, Integer> selector, int... i) {
 		check(source, selector);
 		long total = 0;
 		long count = 0;
@@ -260,7 +261,7 @@ public class QIterable {
 	}
 
 	public static <S> Integer average(Iterable<S> source,
-			Func.v1<S, Integer> selector, Integer... i) {
+			Func.F1<S, Integer> selector, Integer... i) {
 		check(source, selector);
 		long total = 0;
 		long counter = 0;
@@ -277,7 +278,7 @@ public class QIterable {
 	}
 
 	public static <S> long average(Iterable<S> source,
-			Func.v1<S, Long> selector, long... l) {
+			Func.F1<S, Long> selector, long... l) {
 		check(source, selector);
 		long total = 0;
 		long count = 0;
@@ -291,7 +292,7 @@ public class QIterable {
 	}
 
 	public static <S> Long average(Iterable<S> source,
-			Func.v1<S, Long> selector, Long... l) {
+			Func.F1<S, Long> selector, Long... l) {
 		check(source, selector);
 		long total = 0;
 		long counter = 0;
@@ -308,7 +309,7 @@ public class QIterable {
 	}
 
 	public static <S> double average(Iterable<S> source,
-			Func.v1<S, Double> selector, double... d) {
+			Func.F1<S, Double> selector, double... d) {
 		check(source, selector);
 		double total = 0;
 		long count = 0;
@@ -322,7 +323,7 @@ public class QIterable {
 	}
 
 	public static <S> Double average(Iterable<S> source,
-			Func.v1<S, Double> selector, Double... d) {
+			Func.F1<S, Double> selector, Double... d) {
 		check(source, selector);
 		double total = 0;
 		long counter = 0;
@@ -339,7 +340,7 @@ public class QIterable {
 	}
 
 	public static <S> float average(Iterable<S> source,
-			Func.v1<S, Float> selector, float... f) {
+			Func.F1<S, Float> selector, float... f) {
 		check(source, selector);
 		float total = 0;
 		long count = 0;
@@ -353,7 +354,7 @@ public class QIterable {
 	}
 
 	public static <S> Float average(Iterable<S> source,
-			Func.v1<S, Float> selector, Float... f) {
+			Func.F1<S, Float> selector, Float... f) {
 		check(source, selector);
 		float total = 0;
 		long counter = 0;
@@ -370,7 +371,7 @@ public class QIterable {
 	}
 
 	public static <S> BigInteger average(Iterable<S> source,
-			Func.v1<S, BigInteger> selector, BigInteger... b) {
+			Func.F1<S, BigInteger> selector, BigInteger... b) {
 		check(source, selector);
 		BigInteger total = BigInteger.ZERO;
 		long count = 0;
@@ -407,7 +408,7 @@ public class QIterable {
 			Comparator<S> comparer) {
 		check(source);
 		if (comparer == null)
-			comparer = APIUtils.DefaultComparator();
+			comparer = APIUtils.getDefaultComparator();
 		for (S element : source)
 			if (comparer.compare(element, value) == 0)
 				return true;
@@ -426,7 +427,7 @@ public class QIterable {
 		return counter;
 	}
 
-	public static <S> int count(Iterable<S> source, Func.v1<S, Boolean> selector) {
+	public static <S> int count(Iterable<S> source, Func.F1<S, Boolean> selector) {
 		check(source, selector);
 		int counter = 0;
 		for (S element : source)
@@ -443,7 +444,7 @@ public class QIterable {
 			Comparator<S> comparer) {
 		check(source);
 		if (comparer == null)
-			comparer = APIUtils.DefaultComparator();
+			comparer = APIUtils.getDefaultComparator();
 		return createDistinctIterator(source, comparer);
 	}
 
@@ -479,7 +480,7 @@ public class QIterable {
 			Comparator<S> comparer) {
 		check(first, second);
 		if (comparer == null)
-			comparer = APIUtils.DefaultComparator();
+			comparer = APIUtils.getDefaultComparator();
 		return createExceptIterator(first, second, comparer);
 	}
 
@@ -497,73 +498,73 @@ public class QIterable {
 		throw new EmptySourceSequence();
 	}
 
-	public static <S> S first(Iterable<S> source, Func.v1<S, Boolean> predicate) {
+	public static <S> S first(Iterable<S> source, Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		return QUtils.first(source, predicate, true);
 	}
 
 	public static <S> S firstOrDefault(Iterable<S> source) {
 		check(source);
-		v1<S, Boolean> func = APIUtils.Always();
+		F1<S, Boolean> func = APIUtils.getAlwaysFunc();
 		return QUtils.first(source, func, false);
 	}
 
 	public static <S> S firstOrDefault(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		return QUtils.first(source, predicate, false);
 	}
 
 	public static <S, K> Iterable<IGrouping<K, S>> groupBy(Iterable<S> source,
-			Func.v1<S, K> keySelector) {
+			Func.F1<S, K> keySelector) {
 		Comparator<K> comparer = null;
 		return groupBy(source, keySelector, comparer);
 	}
 
 	public static <S, K> Iterable<IGrouping<K, S>> groupBy(Iterable<S> source,
-			Func.v1<S, K> keySelector, Comparator<K> comparer) {
+			Func.F1<S, K> keySelector, Comparator<K> comparer) {
 		check(source, keySelector);
 		return createGroupByIterator(source, keySelector, comparer);
 	}
 
 	public static <S, K, E> Iterable<IGrouping<K, E>> groupBy(
-			Iterable<S> source, Func.v1<S, K> keySelector,
-			Func.v1<S, E> elementSelector) {
+			Iterable<S> source, Func.F1<S, K> keySelector,
+			Func.F1<S, E> elementSelector) {
 		Comparator<K> comparer = null;
 		return groupBy(source, keySelector, elementSelector, comparer);
 	}
 
 	public static <S, K, E> Iterable<IGrouping<K, E>> groupBy(
-			Iterable<S> source, Func.v1<S, K> keySelector,
-			Func.v1<S, E> elementSelector, Comparator<K> comparer) {
+			Iterable<S> source, Func.F1<S, K> keySelector,
+			Func.F1<S, E> elementSelector, Comparator<K> comparer) {
 		check(source, keySelector, elementSelector);
 		return createGroupByIterator(source, keySelector, elementSelector,
 				comparer);
 	}
 
 	public static <S, K, E, R> Iterable<R> groupBy(Iterable<S> source,
-			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector,
-			Func.v2<K, Iterable<E>, R> resultSelector) {
+			Func.F1<S, K> keySelector, Func.F1<S, E> elementSelector,
+			Func.F2<K, Iterable<E>, R> resultSelector) {
 		return groupBy(source, keySelector, elementSelector, resultSelector,
 				null);
 	}
 
 	public static <S, K, E, R> Iterable<R> groupBy(Iterable<S> source,
-			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector,
-			Func.v2<K, Iterable<E>, R> resultSelector, Comparator<K> comparer) {
+			Func.F1<S, K> keySelector, Func.F1<S, E> elementSelector,
+			Func.F2<K, Iterable<E>, R> resultSelector, Comparator<K> comparer) {
 		check(source, keySelector, elementSelector, resultSelector);
 		return createGroupByIterator(source, keySelector, elementSelector,
 				resultSelector, comparer);
 	}
 
 	public static <S, K, R> Iterable<R> groupBy(Iterable<S> source,
-			Func.v1<S, K> keySelector, Func.v2<K, Iterable<S>, R> resultSelector) {
+			Func.F1<S, K> keySelector, Func.F2<K, Iterable<S>, R> resultSelector) {
 		return groupBy(source, keySelector, resultSelector, null);
 	}
 
 	public static <S, K, R> Iterable<R> groupBy(Iterable<S> source,
-			Func.v1<S, K> keySelector,
-			Func.v2<K, Iterable<S>, R> resultSelector, Comparator<K> comparer) {
+			Func.F1<S, K> keySelector,
+			Func.F2<K, Iterable<S>, R> resultSelector, Comparator<K> comparer) {
 		check2(source, keySelector, resultSelector);
 		return createGroupByIterator(source, keySelector, resultSelector,
 				comparer);
@@ -578,7 +579,7 @@ public class QIterable {
 			Iterable<S> second, Comparator<S> comparer) {
 		check(first, second);
 		if (comparer == null)
-			comparer = APIUtils.DefaultComparator();
+			comparer = APIUtils.getDefaultComparator();
 		return createIntersectIterator(first, second, comparer);
 	}
 
@@ -590,11 +591,11 @@ public class QIterable {
 		List<S> list = CastUtils.as(source);
 		if (list != null)
 			return list.get(list.size() - 1);
-		v1<S, Boolean> func = APIUtils.Always();
+		F1<S, Boolean> func = APIUtils.getAlwaysFunc();
 		return QUtils.last(source, func, true);
 	}
 
-	public static <S> S last(Iterable<S> source, Func.v1<S, Boolean> predicate) {
+	public static <S> S last(Iterable<S> source, Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		return QUtils.last(source, predicate, true);
 	}
@@ -604,12 +605,12 @@ public class QIterable {
 		List<S> list = CastUtils.as(source);
 		if (list != null)
 			return list.isEmpty() ? null : list.get(list.size() - 1);
-		v1<S, Boolean> func = APIUtils.Always();
+		F1<S, Boolean> func = APIUtils.getAlwaysFunc();
 		return QUtils.last(source, func, false);
 	}
 
 	public static <S> S lastOrDefault(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		return QUtils.last(source, predicate, false);
 	}
@@ -624,7 +625,7 @@ public class QIterable {
 	}
 
 	public static <S> long longCount(Iterable<S> source,
-			Func.v1<S, Boolean> selector) {
+			Func.F1<S, Boolean> selector) {
 		check(source, selector);
 		long counter = 0;
 		for (S element : source)
@@ -747,7 +748,7 @@ public class QIterable {
 
 	public static <S> S max(Iterable<S> source) {
 		check(source);
-		Comparator<S> comparer = APIUtils.DefaultComparator();
+		Comparator<S> comparer = APIUtils.getDefaultComparator();
 		S max = null;
 		for (S element : source) {
 			if (element == null)
@@ -758,7 +759,7 @@ public class QIterable {
 		return max;
 	}
 
-	public static <S> int max(Iterable<S> source, Func.v1<S, Integer> selector,
+	public static <S> int max(Iterable<S> source, Func.F1<S, Integer> selector,
 			int... i) {
 		check(source, selector);
 		boolean empty = true;
@@ -772,7 +773,7 @@ public class QIterable {
 		return max;
 	}
 
-	public static <S> long max(Iterable<S> source, Func.v1<S, Long> selector,
+	public static <S> long max(Iterable<S> source, Func.F1<S, Long> selector,
 			long... l) {
 		check(source, selector);
 		boolean empty = true;
@@ -787,7 +788,7 @@ public class QIterable {
 	}
 
 	public static <S> double max(Iterable<S> source,
-			Func.v1<S, Double> selector, double... d) {
+			Func.F1<S, Double> selector, double... d) {
 		check(source, selector);
 		boolean empty = true;
 		double max = Double.MIN_VALUE;
@@ -800,7 +801,7 @@ public class QIterable {
 		return max;
 	}
 
-	public static <S> float max(Iterable<S> source, Func.v1<S, Float> selector,
+	public static <S> float max(Iterable<S> source, Func.F1<S, Float> selector,
 			float... f) {
 		check(source, selector);
 		boolean empty = true;
@@ -815,7 +816,7 @@ public class QIterable {
 	}
 
 	public static <S> BigInteger max(Iterable<S> source,
-			Func.v1<S, BigInteger> selector) {
+			Func.F1<S, BigInteger> selector) {
 		check(source, selector);
 		boolean empty = true;
 		BigInteger max = BigInteger.ZERO;
@@ -829,7 +830,7 @@ public class QIterable {
 	}
 
 	public static <S> Integer max(Iterable<S> source,
-			Func.v1<S, Integer> selector, Integer... i) {
+			Func.F1<S, Integer> selector, Integer... i) {
 		check(source, selector);
 		boolean empty = true;
 		Integer max = null;
@@ -846,7 +847,7 @@ public class QIterable {
 		return max;
 	}
 
-	public static <S> Long max(Iterable<S> source, Func.v1<S, Long> selector,
+	public static <S> Long max(Iterable<S> source, Func.F1<S, Long> selector,
 			Long... l) {
 		check(source, selector);
 		boolean empty = true;
@@ -865,7 +866,7 @@ public class QIterable {
 	}
 
 	public static <S> Double max(Iterable<S> source,
-			Func.v1<S, Double> selector, Double... d) {
+			Func.F1<S, Double> selector, Double... d) {
 		check(source, selector);
 		boolean empty = true;
 		Double max = null;
@@ -882,7 +883,7 @@ public class QIterable {
 		return max;
 	}
 
-	public static <S> Float max(Iterable<S> source, Func.v1<S, Float> selector,
+	public static <S> Float max(Iterable<S> source, Func.F1<S, Float> selector,
 			Float... f) {
 		check(source, selector);
 		boolean empty = true;
@@ -900,7 +901,7 @@ public class QIterable {
 		return max;
 	}
 
-	public static <S, R> R max(Iterable<S> source, Func.v1<S, R> selector,
+	public static <S, R> R max(Iterable<S> source, Func.F1<S, R> selector,
 			Object... o) {
 		check(source, selector);
 		return max(select(source, selector));
@@ -1033,7 +1034,7 @@ public class QIterable {
 
 	public static <S> S min(Iterable<S> source) {
 		check(source);
-		Comparator<S> comparer = APIUtils.DefaultComparator();
+		Comparator<S> comparer = APIUtils.getDefaultComparator();
 		S min = null;
 		for (S element : source) {
 			if (element == null)
@@ -1044,7 +1045,7 @@ public class QIterable {
 		return min;
 	}
 
-	public static <S> int min(Iterable<S> source, Func.v1<S, Integer> selector,
+	public static <S> int min(Iterable<S> source, Func.F1<S, Integer> selector,
 			int... i) {
 		check(source, selector);
 		boolean empty = true;
@@ -1058,7 +1059,7 @@ public class QIterable {
 		return min;
 	}
 
-	public static <S> long min(Iterable<S> source, Func.v1<S, Long> selector,
+	public static <S> long min(Iterable<S> source, Func.F1<S, Long> selector,
 			long... l) {
 		check(source, selector);
 		boolean empty = true;
@@ -1073,7 +1074,7 @@ public class QIterable {
 	}
 
 	public static <S> double min(Iterable<S> source,
-			Func.v1<S, Double> selector, double... d) {
+			Func.F1<S, Double> selector, double... d) {
 		check(source, selector);
 		boolean empty = true;
 		double min = Double.MAX_VALUE;
@@ -1086,7 +1087,7 @@ public class QIterable {
 		return min;
 	}
 
-	public static <S> float min(Iterable<S> source, Func.v1<S, Float> selector,
+	public static <S> float min(Iterable<S> source, Func.F1<S, Float> selector,
 			float... f) {
 		check(source, selector);
 		boolean empty = true;
@@ -1101,7 +1102,7 @@ public class QIterable {
 	}
 
 	public static <S> BigInteger min(Iterable<S> source,
-			Func.v1<S, BigInteger> selector, BigInteger... b) {
+			Func.F1<S, BigInteger> selector, BigInteger... b) {
 		check(source, selector);
 		boolean empty = true;
 		BigInteger min = BigInteger.valueOf(Long.MAX_VALUE);
@@ -1115,7 +1116,7 @@ public class QIterable {
 	}
 
 	public static <S> Integer min(Iterable<S> source,
-			Func.v1<S, Integer> selector, Integer... i) {
+			Func.F1<S, Integer> selector, Integer... i) {
 		check(source, selector);
 		boolean empty = true;
 		Integer min = null;
@@ -1132,7 +1133,7 @@ public class QIterable {
 		return min;
 	}
 
-	public static <S> Long min(Iterable<S> source, Func.v1<S, Long> selector,
+	public static <S> Long min(Iterable<S> source, Func.F1<S, Long> selector,
 			Long... l) {
 		check(source, selector);
 		boolean empty = true;
@@ -1150,7 +1151,7 @@ public class QIterable {
 		return min;
 	}
 
-	public static <S> Float min(Iterable<S> source, Func.v1<S, Float> selector,
+	public static <S> Float min(Iterable<S> source, Func.F1<S, Float> selector,
 			Float... f) {
 		check(source, selector);
 		boolean empty = true;
@@ -1169,7 +1170,7 @@ public class QIterable {
 	}
 
 	public static <S> Double min(Iterable<S> source,
-			Func.v1<S, Double> selector, Double... d) {
+			Func.F1<S, Double> selector, Double... d) {
 		check(source, selector);
 		boolean empty = true;
 		Double min = null;
@@ -1186,7 +1187,7 @@ public class QIterable {
 		return min;
 	}
 
-	public static <S, R> R min(Iterable<S> source, Func.v1<S, R> selector) {
+	public static <S, R> R min(Iterable<S> source, Func.F1<S, R> selector) {
 		check(source, selector);
 		return min(select(source, selector));
 	}
@@ -1197,39 +1198,39 @@ public class QIterable {
 	}
 
 	public static <S, R> Iterable<R> select(Iterable<S> source,
-			Func.v1<S, R> selector) {
+			Func.F1<S, R> selector) {
 		check(source, selector);
 		return createSelectIterator(source, selector);
 	}
 
 	public static <S, R> Iterable<R> select(Iterable<S> source,
-			Func.v2<S, Integer, R> selector) {
+			Func.F2<S, Integer, R> selector) {
 		check(source, selector);
 		return createSelectIterator(source, selector);
 	}
 
 	public static <S, R> Iterable<R> selectMany(Iterable<S> source,
-			Func.v1<S, Iterable<R>> selector) {
+			Func.F1<S, Iterable<R>> selector) {
 		check(source, selector);
 		return createSelectManyIterator(source, selector);
 	}
 
 	public static <S, R> Iterable<R> selectMany(Iterable<S> source,
-			Func.v2<S, Integer, Iterable<R>> selector) {
+			Func.F2<S, Integer, Iterable<R>> selector) {
 		check(source, selector);
 		return createSelectManyIterator(source, selector);
 	}
 
 	public static <S, C, R> Iterable<R> selectMany(Iterable<S> source,
-			Func.v1<S, Iterable<C>> collectionSelector,
-			Func.v2<S, C, R> selector) {
+			Func.F1<S, Iterable<C>> collectionSelector,
+			Func.F2<S, C, R> selector) {
 		check(source, collectionSelector, selector);
 		return createSelectManyIterator(source, collectionSelector, selector);
 	}
 
 	public static <S, C, R> Iterable<R> selectMany(Iterable<S> source,
-			Func.v2<S, Integer, Iterable<C>> collectionSelector,
-			Func.v2<S, C, R> selector) {
+			Func.F2<S, Integer, Iterable<C>> collectionSelector,
+			Func.F2<S, C, R> selector) {
 		check(source, collectionSelector, selector);
 		return createSelectManyIterator(source, collectionSelector, selector);
 	}
@@ -1243,7 +1244,7 @@ public class QIterable {
 			Iterable<S> second, Comparator<S> comparer) {
 		check(first, second);
 		if (comparer == null)
-			comparer = APIUtils.DefaultComparator();
+			comparer = APIUtils.getDefaultComparator();
 		Iterator<S> firstIterator = first.iterator();
 		Iterator<S> secondIterator = second.iterator();
 		while (firstIterator.hasNext()) {
@@ -1257,23 +1258,23 @@ public class QIterable {
 
 	public static <S> S single(Iterable<S> source) {
 		check(source);
-		v1<S, Boolean> func = APIUtils.Always();
+		F1<S, Boolean> func = APIUtils.getAlwaysFunc();
 		return QUtils.single(source, func, true);
 	}
 
-	public static <S> S single(Iterable<S> source, Func.v1<S, Boolean> predicate) {
+	public static <S> S single(Iterable<S> source, Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		return QUtils.single(source, predicate, true);
 	}
 
 	public static <S> S singleOrDefault(Iterable<S> source) {
 		check(source);
-		v1<S, Boolean> func = APIUtils.Always();
+		F1<S, Boolean> func = APIUtils.getAlwaysFunc();
 		return QUtils.single(source, func, false);
 	}
 
 	public static <S> S singleOrDefault(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		return QUtils.single(source, predicate, false);
 	}
@@ -1284,13 +1285,13 @@ public class QIterable {
 	}
 
 	public static <S> Iterable<S> skipWhile(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		return createSkipWhileIterator(source, predicate);
 	}
 
 	public static <S> Iterable<S> skipWhile(Iterable<S> source,
-			Func.v2<S, Integer, Boolean> predicate) {
+			Func.F2<S, Integer, Boolean> predicate) {
 		check(source, predicate);
 		return createSkipWhileIterator(source, predicate);
 	}
@@ -1301,13 +1302,13 @@ public class QIterable {
 	}
 
 	public static <S> Iterable<S> takeWhile(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		return createTakeWhileIterator(source, predicate);
 	}
 
 	public static <S> Iterable<S> takeWhile(Iterable<S> source,
-			Func.v2<S, Integer, Boolean> predicate) {
+			Func.F2<S, Integer, Boolean> predicate) {
 		check(source, predicate);
 		return createTakeWhileIterator(source, predicate);
 	}
@@ -1322,24 +1323,24 @@ public class QIterable {
 	}
 
 	public static <S, K> ILookup<K, S> toLookup(Iterable<S> source,
-			Func.v1<S, K> keySelector) {
-		v1<S, S> func = APIUtils.Identity();
+			Func.F1<S, K> keySelector) {
+		F1<S, S> func = APIUtils.getIdentityFunc();
 		return toLookup(source, keySelector, func, null);
 	}
 
 	public static <S, K> ILookup<K, S> toLookup(Iterable<S> source,
-			Func.v1<S, K> keySelector, Comparator<K> comparer) {
-		v1<S, S> func = APIUtils.Identity();
+			Func.F1<S, K> keySelector, Comparator<K> comparer) {
+		F1<S, S> func = APIUtils.getIdentityFunc();
 		return toLookup(source, keySelector, func, comparer);
 	}
 
 	public static <S, K, E> ILookup<K, E> toLookup(Iterable<S> source,
-			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector) {
+			Func.F1<S, K> keySelector, Func.F1<S, E> elementSelector) {
 		return toLookup(source, keySelector, elementSelector, null);
 	}
 
 	public static <S, K, E> ILookup<K, E> toLookup(Iterable<S> source,
-			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector,
+			Func.F1<S, K> keySelector, Func.F1<S, E> elementSelector,
 			Comparator<K> comparer) {
 		check(source, keySelector, elementSelector);
 		List<E> nullKeyElements = null;
@@ -1361,16 +1362,16 @@ public class QIterable {
 	}
 
 	public static <S, K, E> Map<K, E> toMap(Iterable<S> source,
-			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector) {
+			Func.F1<S, K> keySelector, Func.F1<S, E> elementSelector) {
 		return toMap(source, keySelector, elementSelector, null);
 	}
 
 	public static <S, K, E> Map<K, E> toMap(Iterable<S> source,
-			Func.v1<S, K> keySelector, Func.v1<S, E> elementSelector,
+			Func.F1<S, K> keySelector, Func.F1<S, E> elementSelector,
 			Comparator<K> comparer) {
 		check(source, keySelector, elementSelector);
 		if (comparer == null)
-			comparer = APIUtils.DefaultComparator();
+			comparer = APIUtils.getDefaultComparator();
 		Map<K, E> dict = new HashMap<K, E>();
 		for (S e : source)
 			dict.put(keySelector.e(e), elementSelector.e(e));
@@ -1378,14 +1379,14 @@ public class QIterable {
 	}
 
 	public static <S, K> Map<K, S> toMap(Iterable<S> source,
-			Func.v1<S, K> keySelector) {
+			Func.F1<S, K> keySelector) {
 		Comparator<K> comparer = null;
 		return toMap(source, keySelector, comparer);
 	}
 
 	public static <S, K> Map<K, S> toMap(Iterable<S> source,
-			Func.v1<S, K> keySelector, Comparator<K> comparer) {
-		v1<S, S> func = APIUtils.Identity();
+			Func.F1<S, K> keySelector, Comparator<K> comparer) {
+		F1<S, S> func = APIUtils.getIdentityFunc();
 		return toMap(source, keySelector, func, comparer);
 	}
 
@@ -1398,24 +1399,24 @@ public class QIterable {
 			Comparator<S> comparer) {
 		check(first, second);
 		if (comparer == null)
-			comparer = APIUtils.DefaultComparator();
+			comparer = APIUtils.getDefaultComparator();
 		return createUnionIterator(first, second, comparer);
 	}
 
 	public static <S> Iterable<S> where(Iterable<S> source,
-			Func.v1<S, Boolean> predicate) {
+			Func.F1<S, Boolean> predicate) {
 		check(source, predicate);
 		return createWhereIterator(source, predicate);
 	}
 
 	public static <S> Iterable<S> where(Iterable<S> source,
-			Func.v2<S, Integer, Boolean> predicate) {
+			Func.F2<S, Integer, Boolean> predicate) {
 		check(source, predicate);
 		return createWhereIterator(source, predicate);
 	}
 
 	public static <F, S, R> Iterable<R> zip(Iterable<F> first,
-			Iterable<S> second, Func.v2<F, S, R> resultSelector) {
+			Iterable<S> second, Func.F2<F, S, R> resultSelector) {
 		check(first, second);
 		if (resultSelector == null)
 			throw new ArgumentException();

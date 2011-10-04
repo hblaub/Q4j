@@ -16,7 +16,20 @@
  ******************************************************************************/
 package org.q4j.api;
 
+/**
+ * Interface for associating keys with enumerable collections
+ * 
+ * @param <K>
+ *            Type of key
+ * @param <E>
+ *            Type of elements
+ */
 public interface IGrouping<K, E> extends Iterable<E> {
 
+	/**
+	 * Gets the key
+	 * 
+	 * @return object of type K
+	 */
 	K getKey();
 }

@@ -14,11 +14,15 @@
  * You should have received a copy of the GNU Lesser General Public 
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.q4j.data;
+package org.q4j.utils;
 
 import org.q4j.api.IDefaultValue;
+import org.q4j.data.DefaultValues;
 
 public class CastUtils {
+
+	private CastUtils() {
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T as(Object obj) {

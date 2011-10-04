@@ -14,44 +14,45 @@
  * You should have received a copy of the GNU Lesser General Public 
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.q4j.api;
+package org.q4j.utils;
 
 import java.util.Comparator;
 
-import org.q4j.api.Func.v1;
+import org.q4j.api.Func;
+import org.q4j.api.Func.F1;
 
 public class APIUtils {
 
 	private APIUtils() {
 	}
 
-	public static <T> v1<T, Boolean> Always() {
-		return new Func.v1<T, Boolean>() {
+	public static <T> F1<T, Boolean> getAlwaysFunc() {
+		return new Func.F1<T, Boolean>() {
 			public Boolean e(T o) {
 				return true;
 			}
 		};
 	}
 
-	public static <T> v1<T, Boolean> Always(Class<T> clazz) {
-		Func.v1<T, Boolean> func = Always();
+	public static <T> F1<T, Boolean> getAlwaysFunc(Class<T> clazz) {
+		Func.F1<T, Boolean> func = getAlwaysFunc();
 		return func;
 	}
 
-	public static <T> v1<T, T> Identity() {
-		return new Func.v1<T, T>() {
+	public static <T> F1<T, T> getIdentityFunc() {
+		return new Func.F1<T, T>() {
 			public T e(T o) {
 				return o;
 			}
 		};
 	}
 
-	public static <T> v1<T, T> Identity(Class<T> clazz) {
-		Func.v1<T, T> func = Identity();
+	public static <T> F1<T, T> getIdentityFunc(Class<T> clazz) {
+		Func.F1<T, T> func = getIdentityFunc();
 		return func;
 	}
 
-	public static <T> Comparator<T> DefaultComparator() {
+	public static <T> Comparator<T> getDefaultComparator() {
 		return new Comparator<T>() {
 			public int compare(T o1, T o2) {
 				int h1 = o1.hashCode();

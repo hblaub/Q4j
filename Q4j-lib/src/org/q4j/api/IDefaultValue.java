@@ -16,9 +16,27 @@
  ******************************************************************************/
 package org.q4j.api;
 
+/**
+ * Interface for default values of primitives and objects
+ * 
+ * @param <T>
+ *            Type of the default value
+ */
 public interface IDefaultValue<T> {
 
+	/**
+	 * Checks if a given class if compatible with this default value
+	 * 
+	 * @param type
+	 *            Java type to check
+	 * @return true if given type is compatible, e.g. in case of primitives
+	 */
 	boolean isCompatible(Class<?> type);
 
+	/**
+	 * Gets the default value of the associated type
+	 * 
+	 * @return new object of type T
+	 */
 	T getDefault();
 }

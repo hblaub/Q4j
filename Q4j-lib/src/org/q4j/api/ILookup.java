@@ -16,11 +16,38 @@
  ******************************************************************************/
 package org.q4j.api;
 
+/**
+ * Interface for creating enumerable collections of IGrouping
+ * 
+ * @param <K>
+ *            Type of key
+ * @param <E>
+ *            Type of elements
+ */
 public interface ILookup<K, E> extends Iterable<IGrouping<K, E>> {
 
+	/**
+	 * Checks one key
+	 * 
+	 * @param key
+	 *            given key
+	 * @return true if key exists
+	 */
 	boolean contains(K key);
 
+	/**
+	 * Retrieves the size
+	 * 
+	 * @return value as Integer
+	 */
 	int size();
 
+	/**
+	 * Retrieves the associated Iterable object
+	 * 
+	 * @param key
+	 *            given key
+	 * @return found Iterable or null
+	 */
 	Iterable<E> get(K key);
 }
