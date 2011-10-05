@@ -275,6 +275,22 @@ class QUtils {
 			throw new ArgumentException();
 	}
 
+	static <I, O, K, R> void check(Iterable<O> outer, Iterable<I> inner,
+			Func.F1<O, K> outerKeySelector, Func.F1<I, K> innerKeySelector,
+			Func.F2<O, Iterable<I>, R> resultSelector) {
+		if (outer == null || inner == null || outerKeySelector == null
+				|| innerKeySelector == null || resultSelector == null)
+			throw new ArgumentException();
+	}
+
+	static <I, O, K, R> void check2(Iterable<O> outer, Iterable<I> inner,
+			Func.F1<O, K> outerKeySelector, Func.F1<I, K> innerKeySelector,
+			Func.F2<O, I, R> resultSelector) {
+		if (outer == null || inner == null || outerKeySelector == null
+				|| innerKeySelector == null || resultSelector == null)
+			throw new ArgumentException();
+	}
+
 	static <K, T> List<T> containsGroup(Map<K, List<T>> items, K key,
 			Comparator<K> comparer) {
 		Comparator<K> comparerInUse;
@@ -396,6 +412,28 @@ class QUtils {
 		return results;
 	}
 
+	static <O, I, K, R> Iterable<R> createGroupJoinIterator(Iterable<O> outer,
+			Iterable<I> inner, Func.F1<O, K> outerKeySelector,
+			Func.F1<I, K> innerKeySelector,
+			Func.F2<O, Iterable<I>, R> resultSelector, Comparator<K> comparer) {
+		List<R> results = createList();
+		Map<K, List<I>> innerKeys = new HashMap<K, List<I>>();
+		for (I element : inner) {
+			K innerKey = innerKeySelector.e(element);
+			if (!innerKeys.containsKey(innerKey))
+				innerKeys.put(innerKey, new LinkedList<I>());
+			innerKeys.get(innerKey).add(element);
+		}
+		for (O element : outer) {
+			K outerKey = outerKeySelector.e(element);
+			if (innerKeys.containsKey(outerKey))
+				results.add(resultSelector.e(element, innerKeys.get(outerKey)));
+			else
+				results.add(resultSelector.e(element, null));
+		}
+		return results;
+	}
+
 	static <S> Iterable<S> createIntersectIterator(Iterable<S> first,
 			Iterable<S> second, Comparator<S> comparer) {
 		List<S> results = createList();
@@ -403,6 +441,28 @@ class QUtils {
 		for (S element : first) {
 			if (items.remove(element))
 				results.add(element);
+		}
+		return results;
+	}
+
+	static <O, I, K, R> Iterable<R> createJoinIterator(Iterable<O> outer,
+			Iterable<I> inner, Func.F1<O, K> outerKeySelector,
+			Func.F1<I, K> innerKeySelector, Func.F2<O, I, R> resultSelector,
+			Comparator<K> comparer) {
+		List<R> results = createList();
+		Map<K, List<I>> innerKeys = new HashMap<K, List<I>>();
+		for (I element : inner) {
+			K innerKey = innerKeySelector.e(element);
+			if (!innerKeys.containsKey(innerKey))
+				innerKeys.put(innerKey, new LinkedList<I>());
+			innerKeys.get(innerKey).add(element);
+		}
+		for (O element : outer) {
+			K outerKey = outerKeySelector.e(element);
+			if (innerKeys.containsKey(outerKey)) {
+				for (I innerElement : innerKeys.get(outerKey))
+					results.add(resultSelector.e(element, innerElement));
+			}
 		}
 		return results;
 	}

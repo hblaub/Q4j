@@ -23,7 +23,9 @@ import static org.q4j.data.QUtils.createConcatIterator;
 import static org.q4j.data.QUtils.createDistinctIterator;
 import static org.q4j.data.QUtils.createExceptIterator;
 import static org.q4j.data.QUtils.createGroupByIterator;
+import static org.q4j.data.QUtils.createGroupJoinIterator;
 import static org.q4j.data.QUtils.createIntersectIterator;
+import static org.q4j.data.QUtils.createJoinIterator;
 import static org.q4j.data.QUtils.createList;
 import static org.q4j.data.QUtils.createOfTypeIterator;
 import static org.q4j.data.QUtils.createSelectIterator;
@@ -47,11 +49,13 @@ import java.util.Map;
 
 import org.q4j.api.Func;
 import org.q4j.api.Func.F1;
+import org.q4j.api.IDefaultValue;
 import org.q4j.api.IGrouping;
 import org.q4j.api.ILookup;
 import org.q4j.exceptions.ArgumentException;
 import org.q4j.exceptions.EmptySourceException;
 import org.q4j.exceptions.OutOfRangeException;
+import org.q4j.helpers.ReadOnlyCollection;
 import org.q4j.structs.Lookup;
 import org.q4j.utils.APIUtils;
 import org.q4j.utils.CastUtils;
@@ -120,6 +124,10 @@ public class QIterable {
 
 	public static <S> Iterable<S> asIterable(Iterable<S> source) {
 		return source;
+	}
+
+	public static <S> ReadOnlyCollection<S> asReadOnly(Iterable<S> source) {
+		return new ReadOnlyCollection<S>(source);
 	}
 
 	public static int average(Iterable<Integer> source, int... i) {
@@ -437,6 +445,28 @@ public class QIterable {
 		return counter;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <S> Iterable<S> defaultIfEmpty(Iterable<S> source) {
+		Iterator<S> iterator = source.iterator();
+		if (iterator.hasNext()) {
+			S firstObj = iterator.next();
+			if (firstObj != null)
+				for (IDefaultValue<?> defaultValue : DefaultValues.all)
+					if (defaultValue.isCompatible(firstObj.getClass()))
+						return defaultIfEmpty(source,
+								(S) defaultValue.getDefault());
+		}
+		return QUtils.createList();
+	}
+
+	public static <S> Iterable<S> defaultIfEmpty(Iterable<S> source,
+			S defaultValue) {
+		List<S> list = QUtils.createList();
+		for (S element : source)
+			list.add(element == null ? defaultValue : element);
+		return list;
+	}
+
 	public static <S> Iterable<S> distinct(Iterable<S> source) {
 		return distinct(source, null);
 	}
@@ -571,6 +601,25 @@ public class QIterable {
 				comparer);
 	}
 
+	public static <O, I, K, R> Iterable<R> groupJoin(Iterable<O> outer,
+			Iterable<I> inner, Func.F1<O, K> outerKeySelector,
+			Func.F1<I, K> innerKeySelector,
+			Func.F2<O, Iterable<I>, R> resultSelector) {
+		return groupJoin(outer, inner, outerKeySelector, innerKeySelector,
+				resultSelector, null);
+	}
+
+	public static <O, I, K, R> Iterable<R> groupJoin(Iterable<O> outer,
+			Iterable<I> inner, Func.F1<O, K> outerKeySelector,
+			Func.F1<I, K> innerKeySelector,
+			Func.F2<O, Iterable<I>, R> resultSelector, Comparator<K> comparer) {
+		check(outer, inner, outerKeySelector, innerKeySelector, resultSelector);
+		if (comparer == null)
+			comparer = APIUtils.getDefaultComparator();
+		return createGroupJoinIterator(outer, inner, outerKeySelector,
+				innerKeySelector, resultSelector, comparer);
+	}
+
 	public static <S> Iterable<S> intersect(Iterable<S> first,
 			Iterable<S> second) {
 		return intersect(first, second, null);
@@ -582,6 +631,24 @@ public class QIterable {
 		if (comparer == null)
 			comparer = APIUtils.getDefaultComparator();
 		return createIntersectIterator(first, second, comparer);
+	}
+
+	public static <O, I, K, R> Iterable<R> join(Iterable<O> outer,
+			Iterable<I> inner, Func.F1<O, K> outerKeySelector,
+			Func.F1<I, K> innerKeySelector, Func.F2<O, I, R> resultSelector,
+			Comparator<K> comparer) {
+		check2(outer, inner, outerKeySelector, innerKeySelector, resultSelector);
+		if (comparer == null)
+			comparer = APIUtils.getDefaultComparator();
+		return createJoinIterator(outer, inner, outerKeySelector,
+				innerKeySelector, resultSelector, comparer);
+	}
+
+	public static <O, I, K, R> Iterable<R> join(Iterable<O> outer,
+			Iterable<I> inner, Func.F1<O, K> outerKeySelector,
+			Func.F1<I, K> innerKeySelector, Func.F2<O, I, R> resultSelector) {
+		return join(outer, inner, outerKeySelector, innerKeySelector,
+				resultSelector, null);
 	}
 
 	public static <S> S last(Iterable<S> source) {
